@@ -1,3 +1,4 @@
+from objects import GoslingAgent
 from utils import *
 
 #This file holds all of the mechanical tasks, called "routines", that the bot can do
@@ -227,8 +228,8 @@ class goto_boost():
         elif agent.me.airborne:
             agent.push(recovery(self.target))
         elif abs(angles[1]) < 0.05 and velocity > 600 and velocity < 2150 and (distance_remaining / velocity > 2.0 or (adjustment < 90 and car_to_target/velocity > 2.0)):
-            agent.push(flip(local_target))        
-               
+            agent.push(flip(local_target))
+
 class jump_shot():
     #Hits a target point at a target time towards a target direction
     #Target must be no higher than 300uu unless you're feeling lucky
@@ -394,3 +395,36 @@ class short_shot():
         if abs(angles[1]) < 0.05 and (eta < 0.45 or distance < 150):
             agent.pop()
             agent.push(flip(agent.me.local(car_to_ball)))
+
+class wavedash():
+    def __init__(self):
+        self.step = 0
+
+    def run(self, agent:GoslingAgent):
+        if agent.me.velocity.flatten().magnitude() > 100:
+            target = agent.me.velocity.flatten().normalize()*100 + Vector3(0,0,50)
+        else:
+            target = agent.me.forward.flatten()*100 + Vector3(0,0,50)
+        
+        local_target = agent.me.local(target)
+        defaultPD(agent, local_target)
+        self.step += 1
+
+        if self.step < 5:
+            agent.controller.jump = True
+        elif self.step < 8:
+            agent.controller.jump = False
+        else:
+            if (agent.me.location + (agent.me.velocity * 0.2)).z < 5:
+                agent.controller.jump = True
+                agent.controller.pitch = -1
+                agent.controller.yaw = agent.controller.roll = 0
+                agent.pop()
+            elif not agent.me.airborne:
+                agent.pop()
+
+
+
+
+
+

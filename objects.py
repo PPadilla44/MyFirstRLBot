@@ -100,6 +100,8 @@ class GoslingAgent(BaseAgent):
 
         self.renderer.begin_rendering()
         # Run our strategy code
+
+        self.debug_stack()
         self.run()
         # run the routine on the end of the stack
         if len(self.stack) > 0:
