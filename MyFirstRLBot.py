@@ -61,11 +61,13 @@ class MyFirstRLBot(GoslingAgent):
                     return_to_goal = True
 
             elif not me_onside and not has_boost:
-                boosts = [boost for boost in agent.boosts if boost.large and boost.active and abs(agent.friend_goal.location.y - boost.location.y) - 200 < abs(agent.friend_goal)]
+                # It's left as an exercise for the viewer to figure out :). basically just compare goal.y - me.y and goal.y - ball.y
+                boosts = [boost for boost in agent.boosts if boost.large and boost.active and abs(agent.friend_goal.location.y - boost.location.y) - 200 < abs(agent.friend_goal.location.y - agent.ball.location.y)]
                 if len(boosts) > 0:
                     closest = boosts[0]
                     for boost in boosts:
-                        if (boost.location - agent.me.location).magnitude() < (closest - agent.me.location).magnitude():
+
+                        if (boost.location - agent.me.location).magnitude() < (closest.location - agent.me.location).magnitude():
                             closest = boost
                     agent.push(goto_boost(closest, agent.friend_goal.location))
                 else:
