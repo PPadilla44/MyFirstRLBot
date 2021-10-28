@@ -1,6 +1,7 @@
 from tools import  *
 from objects import *
 from routines import *
+from myroutines import *
 
 
 #This file is for strategy
@@ -34,9 +35,15 @@ class MyFirstRLBot(GoslingAgent):
         # Show debug for bot on blue team
         if agent.team == 0:
             agent.debug_stack()
-            agent.line(agent.friend_goal.location, agent.ball.location, [255, 255,255])
-            my_point = agent.friend_goal.location + (my_goal_to_ball * my_distance)
-            agent.line(my_point - Vector3(0,0,100), my_point + Vector3(0,0,200), [0,255,0])
+            # agent.line(agent.friend_goal.location, agent.ball.location, [255, 255,255])
+            # my_point = agent.friend_goal.location + (my_goal_to_ball * my_distance)
+            # agent.line(my_point - Vector3(0,0,100), my_point + Vector3(0,0,200), [0,255,0])
+            target = agent.boosts[26].location + Vector3(0,75*side(agent.team),0)
+            agent.line(target - Vector3(0,0,200), target + Vector3(0,0,200), [255,0,0])
+            target1 = agent.boosts[7].location + Vector3(0,75*side(agent.team),0)
+            agent.line(target1 - Vector3(0,0,200), target1 + Vector3(0,0,200), [255,0,0])
+
+
         
         # 
         return_to_goal = False
@@ -44,7 +51,24 @@ class MyFirstRLBot(GoslingAgent):
         if len(agent.stack) < 1:
             # Add kick off Routine if kickoff
             if agent.kickoff_flag:
-                agent.push(kickoff())
+                # 0 = far
+                # 1 = close
+                # 2 = corner
+                position = 0
+                target = agent.ball.location + Vector3(0, 200*side(agent.team), 0)
+
+                mag = (agent.me.local(target - agent.me.location)).magnitude()
+
+                # Corner Spawn
+                if mag > 3000 and mag < 3200:
+                    position = 2
+                elif mag > 3600 and mag < 3700:
+                    position = 1
+                else:
+                    position = 0
+
+                agent.push(kickoff_flip(position))
+
             elif (is_close and me_onside) or (not foe_onside and me_onside):
                 left_field = Vector3(4200*-side(agent.team), agent.ball.location.y + (1000 * -side(agent.team)), 0)
                 right_field = Vector3(4200*side(agent.team), agent.ball.location.y + (1000 * -side(agent.team)), 0)

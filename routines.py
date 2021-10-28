@@ -135,7 +135,7 @@ class flip():
         elif elapsed >=0.15 and self.counter < 3:
             agent.controller.jump = False
             self.counter += 1
-        elif elapsed < 0.3 or (not self.cancel and elapsed < 0.9):
+        elif elapsed < 0.20 or (not self.cancel and elapsed < 0.9):
             agent.controller.jump = True
             agent.controller.pitch = self.pitch
             agent.controller.yaw = self.yaw
@@ -355,7 +355,6 @@ class recovery():
             local_target = agent.me.local((self.target-agent.me.location).flatten())
         else:
             local_target = agent.me.local(agent.me.velocity.flatten())
-
         defaultPD(agent,local_target)
         agent.controller.throttle = 1
         if not agent.me.airborne:
